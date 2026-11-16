@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}First-time setup{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg rounded-4">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-1">First-time setup</h3>
+                <p class="text-center text-muted small mb-4">
+                    No accounts exist yet. Create the first <strong>admin</strong>; it will create everyone else.
+                    This page disappears once an account exists.
+                </p>
+                <form method="POST" autocomplete="off">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Admin username</label>
+                        <input type="text" name="username" id="username" class="form-control" value="{{ username or '' }}"
+                               pattern="[A-Za-z0-9_.\-]{3,32}" maxlength="32" autocomplete="username" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" id="password" class="form-control"
+                               minlength="12" maxlength="72" autocomplete="new-password" required>
+                        <div class="form-text">At least 12 characters with upper- and lower-case letters, a digit and a symbol.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm password</label>
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control"
+                               minlength="12" maxlength="72" autocomplete="new-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create admin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Message vault{% endblock %}
+{% block content %}
+{% include 'admin/_nav.html' %}
+
+<p class="text-muted small">
+    Messages are stored encrypted with AES-256-GCM. This log shows who talked to whom and when, but never the
+    message content: admins cannot decrypt messages from here.
+</p>
+
+<form method="GET" class="input-group mb-3 vault-search">
+    <input type="search" name="q" value="{{ q }}" class="form-control" maxlength="32"
+           placeholder="Filter by sender, recipient or channel">
+    <button class="btn btn-outline-secondary">Search</button>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-sm align-middle bg-white small">
+        <thead><tr><th>#</th><th>Time (UTC)</th><th>Conversation</th><th>Sender</th><th>Stored ciphertext</th></tr></thead>
+        <tbody>
+        {% for m in rows %}
+        <tr>
+            <td>{{ m.id }}</td>
+            <td class="text-nowrap">{{ m.created_at }}</td>
+            <td>{{ m.label }}</td>
+            <td>{{ m.sender }} <span class="badge role-badge role-{{ m.sender_role }}">{{ m.sender_role }}</span></td>
+            <td class="vault-cell"><code class="cipher">{{ m.body[:90] }}&hellip;</code></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-muted">No messages.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

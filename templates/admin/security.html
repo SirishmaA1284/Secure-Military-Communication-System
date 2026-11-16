@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Suspicious activity{% endblock %}
+{% block content %}
+{% include 'admin/_nav.html' %}
+
+<div class="row g-3 mb-4">
+    {% for value, label, style in [
+        (failed_24h, 'Failed logins (24 h)', 'warning'),
+        (locked_now, 'Accounts locked now', 'danger'),
+        (integrity_7d, 'Integrity / access alerts (7 d)', 'danger'),
+        (brute_force|length + stuffing|length + new_ip|length, 'Behaviour flags', 'primary')] %}
+    <div class="col-6 col-lg-3">
+        <div class="card shadow-sm border-{{ style }}">
+            <div class="card-body">
+                <div class="fs-3 fw-semibold">{{ value }}</div>
+                <div class="small text-muted">{{ label }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<h5>Behaviour analysis</h5>
+<div class="table-responsive mb-4">
+    <table class="table table-sm bg-white align-middle">
+        <thead><tr><th>Rule</th><th>Subject</th><th>Evidence</th><th>Last seen</th></tr></thead>
+        <tbody>
+        {% for r in brute_force %}
+        <tr class="table-warning">
+            <td>Repeated failed logins on one account</td>
+            <td>{{ r.username }}</td>
+            <td>{{ r.n }} failures from {{ r.ips }} address(es) in 24 h</td>
+            <td class="text-nowrap">{{ r.last }}</td>
+        </tr>
+        {% endfor %}
+        {% for r in stuffing %}
+        <tr class="table-danger">
+            <td>One address trying many accounts</td>
+            <td>{{ r.ip }}</td>
+            <td>{{ r.n }} failures across {{ r.users }} usernames in 24 h</td>
+            <td class="text-nowrap">{{ r.last }}</td>
+        </tr>
+        {% endfor %}
+        {% for r in new_ip %}
+        <tr class="table-info">
+            <td>Login from a new address</td>
+            <td>{{ r.username }}</td>
+            <td>First successful login from {{ r.ip }}</td>
+            <td class="text-nowrap">{{ r.created_at }}</td>
+        </tr>
+        {% endfor %}
+        {% if not (brute_force or stuffing or new_ip) %}
+        <tr><td colspan="4" class="text-muted">No suspicious behaviour detected.</td></tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<h5>Integrity and access alerts <small class="text-muted fs-6">(7 days)</small></h5>
+<div class="table-responsive mb-4">
+    <table class="table table-sm table-striped bg-white small">
+        <thead><tr><th>Time</th><th>Event</th><th>User</th><th>IP</th><th>Detail</th></tr></thead>
+        <tbody>
+        {% for e in integrity %}
+        <tr>
+            <td class="text-nowrap">{{ e.created_at }}</td><td>{{ e.event }}</td>
+            <td>{{ e.username or '' }}</td><td>{{ e.ip or '' }}</td><td>{{ e.detail }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-muted">None.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h5>Failed login log</h5>
+<div class="table-responsive">
+    <table class="table table-sm table-striped bg-white small">
+        <thead><tr><th>Time</th><th>Event</th><th>Username tried</th><th>IP</th><th>Detail</th></tr></thead>
+        <tbody>
+        {% for e in failures %}
+        <tr>
+            <td class="text-nowrap">{{ e.created_at }}</td><td>{{ e.event }}</td>
+            <td>{{ e.username or '' }}</td><td>{{ e.ip or '' }}</td><td>{{ e.detail }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-muted">No failed logins recorded.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Accounts{% endblock %}
+{% block content %}
+{% include 'admin/_nav.html' %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Create an account</h5>
+        <form method="POST" class="row g-2 align-items-end" autocomplete="off">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="col-sm-6 col-md-5">
+                <label for="username" class="form-label small">Username</label>
+                <input type="text" name="username" id="username" class="form-control"
+                       pattern="[A-Za-z0-9_.\-]{3,32}" maxlength="32" required>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <label for="role" class="form-label small">Clearance</label>
+                <select name="role" id="role" class="form-select" required>
+                    <option value="">-- choose clearance --</option>
+                    {% for r in roles %}<option value="{{ r }}">{{ ROLE_INFO[r].title }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100">Create</button>
+            </div>
+        </form>
+        <div class="form-text">A one-time temporary password is generated. The user sets their own password and 2FA at first login.</div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+        <thead>
+        <tr><th>Username</th><th>Clearance</th><th>Status</th><th>Created by</th><th>Last login</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+        <tr class="{{ 'text-muted' if u.deleted_at else '' }}">
+            <td>{{ u.username }}</td>
+            <td><span class="badge role-badge role-{{ u.role }}">{{ u.role }}</span></td>
+            <td>
+                {% if u.deleted_at %}<span class="badge text-bg-secondary">deleted</span>
+                {% elif u.is_locked %}<span class="badge text-bg-danger">locked</span>
+                {% elif not u.totp_confirmed or u.must_change_password %}<span class="badge text-bg-warning">not activated</span>
+                {% else %}<span class="badge text-bg-success">active</span>{% endif %}
+            </td>
+            <td>{{ u.created_by or '-' }}</td>
+            <td>{{ u.last_login or '-' }}</td>
+            <td>
+                {% if u.deleted_at %}
+                <span class="small">deleted {{ u.deleted_at }}</span>
+                {% elif u.id == current_user().user_id %}
+                <span class="small">(you)</span>
+                {% else %}
+                <div class="d-flex flex-wrap gap-1">
+                    <form method="POST" action="{{ url_for('admin_set_role', user_id=u.id) }}" class="d-inline-flex gap-1">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <select name="role" class="form-select form-select-sm" aria-label="Clearance for {{ u.username }}">
+                            {% for r in roles %}<option value="{{ r }}" {% if r == u.role %}selected{% endif %}>{{ r }}</option>{% endfor %}
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">Set</button>
+                    </form>
+                    {% if u.is_locked %}
+                    <form method="POST" action="{{ url_for('admin_unlock', user_id=u.id) }}" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-outline-warning">Unlock</button>
+                    </form>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('admin_reset', user_id=u.id) }}" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-outline-secondary" title="New temporary password and new 2FA">Reset</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_delete', user_id=u.id) }}" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="small text-muted">
+    Changing clearance or resetting credentials signs the user out. <strong>Reset</strong> issues a new temporary
+    password and a new 2FA key, for example after a lost phone.
+</p>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Audit trail{% endblock %}
+{% block content %}
+{% include 'admin/_nav.html' %}
+{% include 'admin/_chain.html' %}
+
+<p class="text-muted small">
+    Latest 200 security events: logins, failures, account changes and access denials. Details are stored encrypted (AES-256-GCM), and every entry is hash-chained so later edits or deletions are detected.
+</p>
+<div class="table-responsive">
+    <table class="table table-sm table-striped bg-white small">
+        <thead><tr><th>Time</th><th>Event</th><th>User</th><th>IP</th><th>Detail</th><th>Stored as</th></tr></thead>
+        <tbody>
+        {% for e in events %}
+        <tr>
+            <td class="text-nowrap">{{ e.created_at }}</td>
+            <td>{{ e.event }}</td>
+            <td>{{ e.username or '' }}</td>
+            <td>{{ e.ip or '' }}</td>
+            <td>{{ e.detail }}</td>
+            <td>{% if e.sealed %}<code class="cipher">{{ e.sealed[:28] }}&hellip;</code>{% endif %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-muted">No events.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

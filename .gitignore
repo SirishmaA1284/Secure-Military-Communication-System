@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# secrets and keys
+instance/.env
+instance/secrets.json
+instance/*.pem
+instance/tls/
+instance/*.sql

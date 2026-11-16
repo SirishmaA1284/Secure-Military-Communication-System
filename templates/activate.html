@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Activate account{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg rounded-4">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-1">Activate your account</h3>
+                <p class="text-center mb-4">
+                    <strong>{{ username }}</strong> <span class="badge role-badge role-{{ role }}">{{ role }}</span>
+                </p>
+
+                <form method="POST" autocomplete="off">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    {% if needs_password %}
+                    <h6>1. Choose your own password</h6>
+                    <div class="mb-2">
+                        <input type="password" name="password" class="form-control" placeholder="New password"
+                               minlength="12" maxlength="72" autocomplete="new-password" required aria-label="New password">
+                    </div>
+                    <div class="mb-1">
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Confirm new password"
+                               minlength="12" maxlength="72" autocomplete="new-password" required aria-label="Confirm new password">
+                    </div>
+                    <div class="form-text mb-4">At least 12 characters with upper- and lower-case letters, a digit and a symbol.</div>
+                    {% endif %}
+
+                    <h6>{{ '2.' if needs_password else '1.' }} Set up two-factor authentication</h6>
+                    <p class="small mb-2">
+                        Scan this QR code with Google Authenticator, Microsoft Authenticator or Authy,
+                        or type the key below.
+                    </p>
+                    <div class="text-center my-3">
+                        <img src="{{ qr }}" alt="TOTP QR code for {{ username }}" class="qr-code">
+                    </div>
+                    <p class="text-center"><code class="otp-secret">{{ secret }}</code></p>
+                    <div class="alert alert-warning small">
+                        Anyone with this key can generate your login codes. Do not screenshot or share it.
+                    </div>
+
+                    <h6>{{ '3.' if needs_password else '2.' }} Enter the 6-digit code from the app</h6>
+                    <div class="mb-3">
+                        <input type="text" name="otp" class="form-control form-control-lg text-center otp-input"
+                               inputmode="numeric" pattern="[0-9 ]{6,7}" maxlength="7"
+                               autocomplete="one-time-code" required aria-label="6-digit code">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Activate account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% if chain.ok %}
+<div class="alert alert-success small d-flex flex-wrap justify-content-between gap-2">
+    <span>&#10004; Audit log integrity verified: {{ chain.checked }} entries, hash chain intact.
+        {% if chain.legacy %}({{ chain.legacy }} older entries predate the chain.){% endif %}</span>
+    {% if chain.head %}<span>Latest hash: <code>{{ chain.head[:16] }}&hellip;</code></span>{% endif %}
+</div>
+{% else %}
+<div class="alert alert-danger small">
+    &#9888; Audit log integrity check FAILED at entry #{{ chain.broken_id }}: {{ chain.reason }}.
+    The log may have been tampered with directly in the database.
+</div>
+{% endif %}

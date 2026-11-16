@@ -1,0 +1,13 @@
+<h2 class="mb-3">Admin console</h2>
+<ul class="nav nav-tabs mb-4">
+    {% for endpoint, key, label in [
+        ('admin', 'accounts', 'Accounts'),
+        ('admin_logins', 'logins', 'Login dashboard'),
+        ('admin_security', 'security', 'Suspicious activity'),
+        ('admin_audit', 'audit', 'Audit log'),
+        ('admin_vault', 'vault', 'Message vault')] %}
+    <li class="nav-item">
+        <a class="nav-link {{ 'active' if tab == key else '' }}" href="{{ url_for(endpoint) }}">{{ label }}</a>
+    </li>
+    {% endfor %}
+</ul>

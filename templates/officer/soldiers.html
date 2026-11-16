@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Manage soldiers{% endblock %}
+{% block content %}
+<h2 class="mb-3">Manage soldiers</h2>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Add a soldier</h5>
+        <form method="POST" class="row g-2 align-items-end" autocomplete="off">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="col-sm-8 col-md-6">
+                <label for="username" class="form-label small">Username</label>
+                <input type="text" name="username" id="username" class="form-control"
+                       pattern="[A-Za-z0-9_.\-]{3,32}" maxlength="32" required>
+            </div>
+            <div class="col-sm-4 col-md-3">
+                <button class="btn btn-primary w-100">Add soldier</button>
+            </div>
+        </form>
+        <div class="form-text">A one-time temporary password is generated for the new soldier.</div>
+    </div>
+</div>
+
+<h5>Active soldiers</h5>
+<div class="table-responsive">
+    <table class="table table-sm table-striped align-middle bg-white">
+        <thead><tr><th>Username</th><th>Status</th><th>Added by</th><th>Last login</th><th></th></tr></thead>
+        <tbody>
+        {% for s in soldiers %}
+        <tr>
+            <td>{{ s.username }}</td>
+            <td>
+                {% if s.is_locked %}<span class="badge text-bg-danger">locked</span>
+                {% elif not s.totp_confirmed %}<span class="badge text-bg-warning">not activated</span>
+                {% else %}<span class="badge text-bg-success">active</span>{% endif %}
+            </td>
+            <td>{{ s.created_by or '-' }}</td>
+            <td>{{ s.last_login or '-' }}</td>
+            <td class="text-end">
+                <form method="POST" action="{{ url_for('soldier_delete', user_id=s.id) }}" class="m-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-muted">No soldiers yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="small text-muted">Deleting signs the soldier out immediately and blocks the account. The record is kept in the audit log.</p>
+{% endblock %}

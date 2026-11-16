@@ -1,0 +1,144 @@
+/* static/style.css */
+
+#chat-box {
+    height: 55vh;
+    min-height: 320px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.chat-msg {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #f1f3f5;
+    max-width: 85%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.chat-msg.own {
+    margin-left: auto;
+    background: #dbeafe;
+}
+
+.chat-msg.history {
+    opacity: 0.8;
+}
+
+.chat-meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 2px;
+}
+
+.chat-meta strong {
+    color: #212529;
+}
+
+.role-badge {
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.role-admin   { background-color: #b02a37; color: #fff; }
+.role-officer { background-color: #0a58ca; color: #fff; }
+.role-soldier { background-color: #495057; color: #fff; }
+
+.qr-code {
+    width: 220px;
+    height: 220px;
+    background: #fff;
+    padding: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.otp-secret {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    word-break: break-all;
+}
+
+/* chat layout */
+.sidebar-scroll {
+    max-height: 62vh;
+    overflow-y: auto;
+}
+
+.sidebar-heading {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+    padding: 6px 8px 2px;
+}
+
+.presence-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.presence-dot.online  { background: #198754; }
+.presence-dot.offline { background: #adb5bd; }
+
+.find-in-chat {
+    max-width: 220px;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar-scroll { max-height: 30vh; }
+    .find-in-chat { max-width: none; }
+}
+
+/* login */
+.otp-input {
+    letter-spacing: 0.4em;
+    font-family: monospace;
+}
+
+/* admin */
+.cipher {
+    word-break: break-all;
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+}
+
+.vault-cell {
+    max-width: 480px;
+}
+
+.vault-search {
+    max-width: 480px;
+}
+
+/* login portals */
+.portal-card {
+    border-top: 5px solid #6c757d;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    color: inherit;
+}
+
+.portal-card:hover,
+.portal-card:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.portal-icon {
+    font-size: 2.5rem;
+}
+
+.portal-soldier { border-top: 5px solid #495057; }
+.portal-officer { border-top: 5px solid #0a58ca; }
+.portal-admin   { border-top: 5px solid #b02a37; }
+
+.temp-password {
+    letter-spacing: 0.05em;
+    user-select: all;
+}
